@@ -7,46 +7,87 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 // TODO: Add CSS loaders and babel to webpack.
 
 
+// const is_prod = process.env.NODE_ENV === 'production'
+
+//when npm run build , store it true
 
 
-const plugins = [
-  new HtmlWebpackPlugin({
-    template: './index.html'
-  }),
+module.exports = (env, argv) => {
+  const isBuild = argv.mode === 'production'
 
-  new InjectManifest({
-    // inject manifest into service worker
-    // swSrc represents the service worker file, in this case src-sw.js
-    swSrc: './src-sw.js',
-    // swDest represents the service worker destination
-    swDest: 'sw.js',
+  // console.log('TESTING:    ', process.env.NODE_ENV)
 
-  }),
-  new WebpackPwaManifest({
-    name: 'jate',
-    short_name: 'jate',
-    description: 'Just another text editor',
-    background_color: '#ffffff',
-    theme_color: '#000000',
-    ios: true,
-    crossorigin: 'use-credentials',
-    icons: [
-      {
-        src: path.resolve('src/images/logo.png'),
-        sizes: [96, 128, 192, 256, 384, 512],
-      },
-      {
-        src: path.resolve('src/images/logo.png'),
-        size: '1024x1024',
-        purpose: 'maskable',
-      },
-    ],
-  })
+  const productionPlugins = [
+    new InjectManifest({
 
-]
+      include: [/\.html$/, /\.js$/, /\.css$/, /\.png$/, /\.jpg$/, /\.jpeg$/, /\.svg$/, /\.gif$/, /\.ico$/],
 
 
-module.exports = () => {
+      // inject manifest into service worker
+      // swSrc represents the service worker file, in this case src-sw.js
+      swSrc: './src-sw.js',
+      // swDest represents the service worker destination
+
+
+
+    }),
+
+    new WebpackPwaManifest({
+      fingerprints: false,
+      name: 'pwa-text-editor',
+      short_name: 'jate',
+      filename: 'manifest.json',
+      description: 'Just another text editor',
+      background_color: '#ffffff',
+      theme_color: '#000000',
+      publicPath: '/',
+      ios: true,
+      crossorigin: 'use-credentials',
+      icons: [
+        // {
+        //   src: './src/images/logo.png',
+        //   destination: 'asset',
+        //   filename: 'icon_96x96.png',
+        //   sizes: [96],
+        // },
+        {
+          src: './src/images/logo.png',
+          destination: path.join('asset', 'icon'),
+          sizes: [96, 128, 192, 256, 384, 512],
+        },
+        // {
+        //   src: './src/images/logo.png',
+        //   destination: path.join('asset', 'maskable'),
+        //   sizes: [120, 152, 167, 180],
+        //   purpose: 'maskable',
+        // }
+
+      ],
+    }),
+  ]
+
+
+  const plugins = [
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      title: 'jate',
+      filename: 'index.html',
+    }),
+
+
+
+
+
+  ]
+
+  // if (is_prod) {
+  //   plugins.push(...productionPlugins)
+  // }
+
+  if (isBuild) {
+    plugins.push(...productionPlugins)
+  }
+
   return {
     mode: 'development',
     entry: {
@@ -56,6 +97,7 @@ module.exports = () => {
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
+      clean: true,
     },
     plugins: plugins,
 
