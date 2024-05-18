@@ -7,15 +7,11 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 // TODO: Add CSS loaders and babel to webpack.
 
 
-// const is_prod = process.env.NODE_ENV === 'production'
-
-//when npm run build , store it true
-
 
 module.exports = (env, argv) => {
   const isBuild = argv.mode === 'production'
 
-  // console.log('TESTING:    ', process.env.NODE_ENV)
+
 
   const productionPlugins = [
     new InjectManifest({
@@ -44,23 +40,13 @@ module.exports = (env, argv) => {
       ios: true,
       crossorigin: 'use-credentials',
       icons: [
-        // {
-        //   src: './src/images/logo.png',
-        //   destination: 'asset',
-        //   filename: 'icon_96x96.png',
-        //   sizes: [96],
-        // },
+
         {
           src: './src/images/logo.png',
           destination: path.join('asset', 'icon'),
           sizes: [96, 128, 192, 256, 384, 512],
         },
-        // {
-        //   src: './src/images/logo.png',
-        //   destination: path.join('asset', 'maskable'),
-        //   sizes: [120, 152, 167, 180],
-        //   purpose: 'maskable',
-        // }
+
 
       ],
     }),
@@ -80,9 +66,6 @@ module.exports = (env, argv) => {
 
   ]
 
-  // if (is_prod) {
-  //   plugins.push(...productionPlugins)
-  // }
 
   if (isBuild) {
     plugins.push(...productionPlugins)
